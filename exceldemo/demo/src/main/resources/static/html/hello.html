@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../js/jquery/jquery-plugin-json.js"></script>
+    <script src="../js/hello.js"></script>
+</head>
+<body>
+
+<form id="upload" enctype="multipart/form-data" method="post">
+    <input type="file" name="file" id="pic"/>
+    <input type="button" value="提交" onclick="uploadPic();"/>
+    <span class="showUrl"></span>
+    <img src="" class="showPic" alt="">
+</form>
+
+<a href="/exportExcel">导出excel</a>
+
+</body>
+</html>
