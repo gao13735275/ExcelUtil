@@ -68,10 +68,6 @@ public class OnWriterDataHandlerInternalImpl extends BaseOnWriterDataHandlerInte
 
     @Override
     public Integer setRowHeight(int sheetIndex, int rowIndex) {
-        if(sheetIndex != 0){//现在只支持一个sheet
-            return null;
-        }
-
         if(rowIndex == 0){
             return 1000;
         }
@@ -103,10 +99,6 @@ public class OnWriterDataHandlerInternalImpl extends BaseOnWriterDataHandlerInte
      */
     @Override
     public CellStyle setCellStyle(int sheetIndex, int rowIndex, int columnIndex, Workbook wb) {
-        if(sheetIndex != 0){//现在只支持一个sheet
-            return null;
-        }
-
         if(rowIndex == 0){//顶部标题
             return ExcelStyleUtil.customHeadStyle(wb,writeExcelAnnotationDto.getFontSize());
         }
@@ -134,10 +126,6 @@ public class OnWriterDataHandlerInternalImpl extends BaseOnWriterDataHandlerInte
     @Override
     public List<String> tableData(int sheetIndex, int rowIndex) {
         currentDataIndex++;//索引增加
-
-        if(sheetIndex != 0){//现在只支持一个sheet
-            return null;
-        }
 
         if(rowIndex == tableDataTopRowCount(sheetIndex)){//标题
             return titleList;

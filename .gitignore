@@ -7,6 +7,5 @@
 *.iml
 out
 gen
-target
 LOG_PATH_IS_UNDEFINED
 .flattened-pom.xml

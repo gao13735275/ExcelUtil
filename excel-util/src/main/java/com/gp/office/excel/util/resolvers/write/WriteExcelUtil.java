@@ -21,47 +21,82 @@ import java.util.List;
  * @create: 2018-10-08 17:22
  **/
 public class WriteExcelUtil {
-    private static Logger log = LoggerFactory.getLogger(WriteExcelUtil.class);
+    private Logger log = LoggerFactory.getLogger(WriteExcelUtil.class);
+
+    Workbook wb;
+
+    /**
+     * 初始化
+     * @param excelType
+     */
+    public WriteExcelUtil(int excelType){//ExcelType.EXCEL2007ByBulkData 大批量导出
+        this.createWorkbook(excelType);
+    }
+
+    /**
+     * 组装完数据后，写入流并导出
+     * @param stream
+     */
+    public void write(OutputStream stream){
+        try {
+            log.debug("write to excel");
+            //写excel
+            wb.write(stream);
+            stream.flush();
+            stream.close();
+        } catch (Exception ex) {
+            log.error("导出excel出错:{}",ex);
+        }
+    }
+
+
+    /**
+     * 生产excel
+     * @param handlerList
+     * @return
+     */
+    public WriteExcelUtil writerExcel(List<OnWriterDataHandler> handlerList){
+        for (OnWriterDataHandler onWriterDataHandler : handlerList) {
+            writerExcel(onWriterDataHandler);
+        }
+        return this;
+    }
+
+    /**
+     * 生成excel
+     * @param handler
+     * @return
+     */
+    public WriteExcelUtil writerExcel(OnWriterDataHandler handler) {
+        return this.writerExcel(handler,null);
+    }
 
     /**
      * 生成excel
      *
-     * @param stream
      * @param handler
      */
-    public static void writerExcel(OutputStream stream, OnWriterDataHandler handler) {
-        writerExcel(stream, ExcelType.EXCEL2007, handler);
-    }
-
-    /**
-     * 生成大批量数据的导出
-     * @param stream
-     * @param handler
-     */
-    public static void writerExcelByBulkData(OutputStream stream, OnWriterDataHandler handler){
-        writerExcel(stream, ExcelType.EXCEL2007ByBulkData, handler);
-    }
-
-    /**
-     * 生成excel
-     *
-     * @param stream
-     * @param handler
-     */
-    public static void writerExcel(OutputStream stream,int excelType, OnWriterDataHandler handler) {
+    public WriteExcelUtil writerExcel(OnWriterDataHandler handler,Integer _sheetIndex) {
         long totalRows = 1L;
         long begin = System.currentTimeMillis();
 
-        Workbook wb = createWorkbook(excelType);
         handler.getWorkbook(wb);//把workBook对象放出去
 
         String sheetName = handler.setSheetName();
         if (sheetName.isEmpty()) {//如果没有sheet，则认为数据为空
-            return;
+            return this;
         }
-        //初始化表格
-        Sheet sheet = wb.createSheet(sheetName);
-        int sheetIndex = wb.getSheetIndex(sheet);
+
+        Sheet sheet;//sheet对象
+        int sheetIndex;//sheet的索引
+        if(_sheetIndex == null){
+            //初始化表格
+            sheet = wb.createSheet(sheetName);
+            sheetIndex = wb.getSheetIndex(sheet);
+        }else{
+            sheet = wb.getSheetAt(_sheetIndex);
+            sheetIndex = _sheetIndex;
+        }
 
         log.debug("set excel columnWidth");
         List<Integer> setColumnWidth = handler.setColumnWidth();//以一个字符的1/256的宽度作为一个单位,3000就是11.7,就是约等于11个字符,这里说的都是半角
@@ -119,16 +154,9 @@ public class WriteExcelUtil {
             }
         }
 
-        try {
-            log.debug("write to excel");
-            //写excel
-            wb.write(stream);
-            stream.flush();
-            stream.close();
-        } catch (Exception ex) {
-            log.error("导出excel出错:{}",ex);
-        }
         log.info(String.format("Excel数据写入并处理完成,共写入数据：%s行,耗时：%s seconds.", totalRows, (System.currentTimeMillis() - begin) / 1000F));
+
+        return this;
     }
 
     /**
@@ -137,13 +165,15 @@ public class WriteExcelUtil {
      * @param type
      * @return
      */
-    private static Workbook createWorkbook(int type) {
+    private Workbook createWorkbook(int type) {
         if (type == ExcelType.EXCEL2003){
-            return new HSSFWorkbook();
+            wb = new HSSFWorkbook();
         }else if(type == ExcelType.EXCEL2007ByBulkData){
-            return new SXSSFWorkbook();
+            wb = new SXSSFWorkbook();
+        }else{
+            wb = new XSSFWorkbook();
         }
-        return new XSSFWorkbook();
+        return wb;
     }
 
 }

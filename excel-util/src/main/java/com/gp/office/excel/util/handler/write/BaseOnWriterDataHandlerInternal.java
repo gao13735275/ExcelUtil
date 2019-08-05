@@ -14,9 +14,9 @@ import java.util.List;
 public abstract class BaseOnWriterDataHandlerInternal implements OnWriterDataHandler {
     @Override
     public List<String> rowDataHandler(int sheetIndex, int rowIndex) {
-        if(sheetIndex > 0){
-            return null;
-        }
+//        if(sheetIndex > 0){
+//            return null;
+//        }
 
         if(rowIndex < tableDataTopRowCount(sheetIndex) ){//列表数据之前的数据
             return tableDataTop(sheetIndex,rowIndex);

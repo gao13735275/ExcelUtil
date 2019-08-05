@@ -1,5 +1,6 @@
 package com.gp.office.excel.util;
 
+import com.gp.office.excel.util.constants.ExcelType;
 import com.gp.office.excel.util.handler.write.OnWriterDataHandlerInternalImpl;
 import com.gp.office.excel.util.resolvers.write.WriteExcelUtil;
 
@@ -22,7 +23,9 @@ public class WriteExcelApi {
      * @param <T>
      */
     public static <T> void writerExcelByAnnotation(OutputStream stream,String sheetName, List<?> list,Class<T> classOfT) {
-        WriteExcelUtil.writerExcel(stream,new OnWriterDataHandlerInternalImpl(sheetName,list,classOfT));
+        WriteExcelUtil writeExcelUtil = new WriteExcelUtil(ExcelType.EXCEL2007ByBulkData);
+        writeExcelUtil.writerExcel(new OnWriterDataHandlerInternalImpl(sheetName,list,classOfT));
+        writeExcelUtil.write(stream);
     }
 
     /**
@@ -35,6 +38,9 @@ public class WriteExcelApi {
      * @param <T>
      */
     public static <T> void writerExcelByAnnotation(OutputStream stream,String sheetName,String _banner, List<?> list,Class<T> classOfT) {
-        WriteExcelUtil.writerExcel(stream,new OnWriterDataHandlerInternalImpl(sheetName,_banner,list,classOfT));
+        WriteExcelUtil writeExcelUtil = new WriteExcelUtil(ExcelType.EXCEL2007ByBulkData);
+        writeExcelUtil.writerExcel(new OnWriterDataHandlerInternalImpl(sheetName,_banner,list,classOfT));
+        writeExcelUtil.write(stream);
     }
+
 }
