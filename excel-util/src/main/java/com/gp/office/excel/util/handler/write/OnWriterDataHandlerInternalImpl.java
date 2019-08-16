@@ -2,6 +2,7 @@ package com.gp.office.excel.util.handler.write;
 
 import com.gp.office.excel.util.constants.ExcelConstant;
 import com.gp.office.excel.util.model.write.CellRangeAddressDto;
+import com.gp.office.excel.util.model.write.PictureDto;
 import com.gp.office.excel.util.model.write.WriteExcelAnnotationDto;
 import com.gp.office.excel.util.model.write.WriteExcelColumnAnnotationDto;
 import com.gp.office.excel.util.resolvers.write.WriteAnnotationAnalysis;
@@ -76,13 +77,22 @@ public class OnWriterDataHandlerInternalImpl extends BaseOnWriterDataHandlerInte
     }
 
     /**
+     * 添加图片
+     * @return
+     */
+    @Override
+    public List<PictureDto> setPicture(){
+        return null;
+    }
+
+    /**
      * 设置合并单元格的数据
      * @return
      */
     @Override
     public List<CellRangeAddressDto> addMergedRegions() {
         List<CellRangeAddressDto> cellRangeAddressDtoList = new ArrayList<>();
-        cellRangeAddressDtoList.add(new CellRangeAddressDto(0,0,0,titleList.size()));
+        cellRangeAddressDtoList.add(new CellRangeAddressDto(0,0,0,titleList.size()-1));
         return cellRangeAddressDtoList;
     }
 

@@ -1,5 +1,6 @@
 package com.gp.office.excel.util.handler.write;
 
+import com.gp.office.excel.util.model.write.PictureDto;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -41,6 +42,14 @@ public abstract class BaseOnWriterDataHandlerInternal implements OnWriterDataHan
 
     }
 
+    /**
+     * 设置样式,如果先设置样式，然后单元格合并，则设置线条粗细，使用addMergedRegions方法里的CellRangeAddressDto设置线条
+     * @param sheetIndex
+     * @param rowIndex
+     * @param columnIndex
+     * @param wb
+     * @return
+     */
     @Override
     public CellStyle setCellStyle(int sheetIndex, int rowIndex, int columnIndex, Workbook wb) {
         return null;
@@ -53,6 +62,12 @@ public abstract class BaseOnWriterDataHandlerInternal implements OnWriterDataHan
 
     @Override
     public Integer setRowHeight(int sheetIndex, int rowIndex) {
+        return null;
+    }
+
+
+    @Override
+    public Integer setCellType(int sheetIndex, int rowIndex, int columnIndex) {
         return null;
     }
 
