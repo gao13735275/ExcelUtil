@@ -64,6 +64,7 @@ public interface OnWriterDataHandler {
      * @throws IllegalArgumentException if the specified cell type is invalid
      * @see org.apache.poi.ss.usermodel.Cell#CELL_TYPE_NUMERIC
      * @see org.apache.poi.ss.usermodel.Cell#CELL_TYPE_STRING
+     * @see org.apache.poi.ss.usermodel.Cell#CELL_TYPE_FORMULA
      *
      * @param sheetIndex
      * @param rowIndex
