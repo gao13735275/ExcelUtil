@@ -4,14 +4,9 @@ import com.gp.office.excel.util.constants.ExcelConstant;
 import com.gp.office.excel.util.exception.ExcelException;
 import com.gp.office.excel.util.handler.read.OnReadDataHandler;
 import org.apache.poi.POIXMLDocument;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,8 +83,33 @@ public class ReadExcelUtil {
                             Cell cell = row.getCell(j);
                             if(cell != null) {
                                 //时间型的数据
-                                if (HSSFCell.CELL_TYPE_NUMERIC == cell.getCellType() && HSSFDateUtil.isCellDateFormatted(cell)) {
+                                if (Cell.CELL_TYPE_NUMERIC == cell.getCellType() && DateUtil.isCellDateFormatted(cell)) {
                                     rowData.add(cell.getDateCellValue().getTime()+"");
+                                }else if(Cell.CELL_TYPE_NUMERIC == cell.getCellType() && cell.getCellStyle().getDataFormatString() != null && !cell.getCellStyle().getDataFormatString().equals("General")){
+                                    // 单元格设置成常规
+                                    String dataFormatString = cell.getCellStyle().getDataFormatString();
+                                    Boolean startCollectFormat = false;
+                                    Integer startIndex=0;//起始截取的字符串
+                                    Integer endIndex=0;//结束截取的字符串
+                                    for (int length = dataFormatString.length()-1; length > 0; length--) {
+                                        char nc = dataFormatString.charAt(length);
+                                        if(nc == '0' || nc == '.'){
+                                            if(!startCollectFormat){//第一次，记录起始的截取字符串的位置
+                                                startCollectFormat = true;
+                                                endIndex = length + 1;
+                                            }
+                                        }else{
+                                            if(startCollectFormat){//第一个不是0或者小数点的数据，就停止收集
+                                                startIndex = length + 1;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    DecimalFormat format = new DecimalFormat(dataFormatString.substring(startIndex,endIndex));
+                                    String str = format.format(cell.getNumericCellValue());
+
+                                    rowData.add(str);
                                 }else{
                                     // 统一以字符串的方式获取
                                     cell.setCellType(Cell.CELL_TYPE_STRING);
