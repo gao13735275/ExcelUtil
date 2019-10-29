@@ -86,30 +86,15 @@ public class ReadExcelUtil {
                                 if (Cell.CELL_TYPE_NUMERIC == cell.getCellType() && DateUtil.isCellDateFormatted(cell)) {
                                     rowData.add(cell.getDateCellValue().getTime()+"");
                                 }else if(Cell.CELL_TYPE_NUMERIC == cell.getCellType() && cell.getCellStyle().getDataFormatString() != null && !cell.getCellStyle().getDataFormatString().equals("General")){
-                                    // 单元格设置成常规
-                                    String dataFormatString = cell.getCellStyle().getDataFormatString();
-                                    Boolean startCollectFormat = false;
-                                    Integer startIndex=0;//起始截取的字符串
-                                    Integer endIndex=0;//结束截取的字符串
-                                    for (int length = dataFormatString.length()-1; length > 0; length--) {
-                                        char nc = dataFormatString.charAt(length);
-                                        if(nc == '0' || nc == '.'){
-                                            if(!startCollectFormat){//第一次，记录起始的截取字符串的位置
-                                                startCollectFormat = true;
-                                                endIndex = length + 1;
-                                            }
-                                        }else{
-                                            if(startCollectFormat){//第一个不是0或者小数点的数据，就停止收集
-                                                startIndex = length + 1;
-                                                break;
-                                            }
-                                        }
+                                    // 支持数值型和货币型的单元格设置
+                                    String valueByFormat = getValueByFormat(cell.getCellStyle().getDataFormatString(), cell.getNumericCellValue());
+
+                                    if("".equals(valueByFormat)){
+                                        rowData.add(ExcelConstant.getEmptyCellValue());
+                                    }else{
+                                        rowData.add(valueByFormat);
                                     }
 
-                                    DecimalFormat format = new DecimalFormat(dataFormatString.substring(startIndex,endIndex));
-                                    String str = format.format(cell.getNumericCellValue());
-
-                                    rowData.add(str);
                                 }else{
                                     // 统一以字符串的方式获取
                                     cell.setCellType(Cell.CELL_TYPE_STRING);
@@ -164,5 +149,34 @@ public class ReadExcelUtil {
 //        } catch (IOException e) {
 //        }
 //        return workbook;
+    }
+
+    /**
+     * 数值型和货币型的数据解析
+     * @param dataFormatString
+     * @param numericCellValue
+     * @return
+     */
+    protected static String getValueByFormat(String dataFormatString,double numericCellValue){
+        Boolean startCollectFormat = false;
+        Integer startIndex=0;//起始截取的字符串
+        Integer endIndex=0;//结束截取的字符串
+        for (int length = dataFormatString.length()-1; length > 0; length--) {
+            char nc = dataFormatString.charAt(length);
+            if(nc == '0' || nc == '.'){
+                if(!startCollectFormat){//第一次，记录起始的截取字符串的位置
+                    startCollectFormat = true;
+                    endIndex = length + 1;
+                }
+            }else{
+                if(startCollectFormat){//第一个不是0或者小数点的数据，就停止收集
+                    startIndex = length + 1;
+                    break;
+                }
+            }
+        }
+
+        DecimalFormat format = new DecimalFormat(dataFormatString.substring(startIndex,endIndex));
+        return format.format(numericCellValue);
     }
 }
