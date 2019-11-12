@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @program: excelutil
@@ -82,6 +83,22 @@ public class OnReadDataHandlerInternalImpl<T> extends BaseOnReadDataHandlerInter
     protected void tableData(int sheetIndex, int rowIndex, List<String> rowData) {
         if(rowIndex == titleIndex){//指定那行的数据
             excelTitleName = rowData;
+
+            //列头必填校验
+            Map<String, ReadExcelColumnAnnotationDto> readExcelColumnAnnotationDtoMap = readExcelAnnotationDto.getReadExcelColumnAnnotationDtoMap();
+
+            List<String> titleNameList = readExcelColumnAnnotationDtoMap.values().stream().filter(p -> p.isRequired() == true || p.isOnlyOneRequired()).map(ReadExcelColumnAnnotationDto::getTitleName).distinct().collect(Collectors.toList());
+            titleNameList.removeAll(rowData);
+            if(titleNameList.size() != 0){
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String titleName : titleNameList) {
+                    stringBuilder.append(",");
+                    stringBuilder.append(titleName);
+                }
+                stringBuilder.append(" 必填");
+                throw new ExcelException(stringBuilder.toString().substring(1));
+            }
+
             if(onReadTitleInternalHandler != null){//输出列头的数据
                 onReadTitleInternalHandler.titleNameList(rowData);
             }
