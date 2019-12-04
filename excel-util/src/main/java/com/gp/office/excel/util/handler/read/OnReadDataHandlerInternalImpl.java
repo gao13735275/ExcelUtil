@@ -92,6 +92,9 @@ public class OnReadDataHandlerInternalImpl<T> extends BaseOnReadDataHandlerInter
             if(titleNameList.size() != 0){
                 StringBuilder stringBuilder = new StringBuilder();
                 for (String titleName : titleNameList) {
+                    if(titleName.contains("%")){//有模糊匹配的时候，暂时先跳过
+                        continue;
+                    }
                     stringBuilder.append(",");
                     stringBuilder.append(titleName);
                 }
